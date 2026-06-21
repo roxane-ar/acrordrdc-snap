@@ -1,0 +1,65 @@
+#!/bin/bash
+#
+# pre-start hook - sourced by sommelier on *every* launch (see start_app()).
+#
+# Adobe Reader runs under Wine through XWayland, which renders the whole UI at a
+# fixed 96 DPI. On HiDPI screens that makes Reader microscopic, because confined
+# snaps cannot read the desktop's scale factor (the compositor blocks the query
+# and GNOME does not expose it via gsettings).
+#
+# However, xrandr still reports the panel's *physical* size, so we can detect a
+# HiDPI ("Retina-class") screen and scale Wine's UI to match by setting:
+#
+#   HKEY_CURRENT_USER\Control Panel\Desktop  ->  LogPixels (REG_DWORD)
+#
+#   >= 288 dpi  ->  288 (300%)
+#   >= 192 dpi  ->  192 (200%)
+#   otherwise   ->  96 (100%, unchanged)
+#
+# The threshold matters: scaling purely by physical DPI would wrongly enlarge
+# ordinary screens (e.g. a 1080p 14" laptop is ~157 dpi). Only genuinely HiDPI
+# panels are scaled, so normal-density screens are left untouched.
+#
+# NOTE: this file is *sourced*, not executed - use `return`, not `exit`, and do
+# not leave shell options (set -e/-u) enabled for the caller.
+
+xrandr_bin="$(command -v xrandr || true)"
+[[ -x "${xrandr_bin}" ]] || xrandr_bin="${SNAP}/wine-runtime/usr/bin/xrandr"
+[[ -x "${xrandr_bin}" ]] || return 0
+
+# Pick the primary connected output, or the first connected one if none is
+# flagged primary. Each line looks like:
+#   HDMI-1 connected primary 5120x2880+3072+0 (normal ...) 600mm x 340mm
+line="$("${xrandr_bin}" -q 2>/dev/null | grep -E ' connected primary [0-9]+x[0-9]+' | head -1)"
+[[ -z "${line}" ]] && line="$("${xrandr_bin}" -q 2>/dev/null | grep -E ' connected [0-9]+x[0-9]+' | head -1)"
+[[ -z "${line}" ]] && return 0
+
+px_w="$(grep -oE '[0-9]+x[0-9]+\+[0-9]+\+[0-9]+' <<<"${line}" | head -1)"; px_w="${px_w%%x*}"
+mm_w="$(grep -oE '[0-9]+mm x [0-9]+mm' <<<"${line}" | grep -oE '^[0-9]+')"
+
+# Need sane numbers; some panels report 0mm when no EDID is available.
+[[ "${px_w}" =~ ^[0-9]+$ && "${mm_w}" =~ ^[0-9]+$ ]] && (( mm_w > 0 )) || return 0
+
+dpi=$(( px_w * 254 / mm_w / 10 ))   # px * 25.4 / mm
+
+if   (( dpi >= 288 )); then logpixels=288
+elif (( dpi >= 192 )); then logpixels=192
+else                        logpixels=96
+fi
+
+# Skip the (slow) Wine registry write when this value is already applied.
+marker="${WINEPREFIX}/.snap_hidpi"
+[[ "$(cat "${marker}" 2>/dev/null || true)" == "${logpixels}" ]] && return 0
+
+# Nothing to do on a normal-density screen we have never scaled.
+[[ "${logpixels}" == "96" && ! -f "${marker}" ]] && return 0
+
+echo "pre-start: ${dpi} dpi panel detected, setting Wine LogPixels=${logpixels}"
+if "${WINELOADER}" reg add "HKEY_CURRENT_USER\\Control Panel\\Desktop" \
+      /v LogPixels /t REG_DWORD /d "${logpixels}" /f >/dev/null 2>&1; then
+  echo "${logpixels}" > "${marker}"
+else
+  echo "pre-start: failed to set Wine display DPI" >&2
+fi
+
+return 0

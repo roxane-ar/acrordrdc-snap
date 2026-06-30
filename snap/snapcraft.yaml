@@ -65,7 +65,7 @@ parts:
       snapcraftctl build
       set -ex
       snapcraftctl set-version "2020.013.20064"
-      mkdir -p sommelier/hooks ; mv pre-install pre-start sommelier/hooks ; cp -R -p sommelier $SNAPCRAFT_PART_INSTALL
+      mkdir -p sommelier/hooks ; mv pre-install pre-start mspatcha.dll sommelier/hooks ; cp -R -p sommelier $SNAPCRAFT_PART_INSTALL
     stage:
       - sommelier
     build-packages:

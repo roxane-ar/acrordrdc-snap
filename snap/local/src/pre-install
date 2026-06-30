@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # acrordrdc env
-progHome="$WINEPREFIX/drive_c/Program Files/Adobe/Acrobat Reader DC/Reader"
+progHome="$WINEPREFIX/drive_c/Program Files (x86)/Adobe/Acrobat Reader DC/Reader"
 progBin="AcroRd32.exe"
-progSetup="$WINEPREFIX/drive_c/Program Files/Adobe/Acrobat Reader DC/Setup Files/{AC76BA86-7AD7-1033-7B44-AC0F074E4100}"
+progSetup="$WINEPREFIX/drive_c/Program Files (x86)/Adobe/Acrobat Reader DC/Setup Files/{AC76BA86-7AD7-1033-7B44-AC0F074E4100}"
 prefixFont="$WINEPREFIX/drive_c/windows/Fonts"
 
 # Get mspatcha.dll from snap bundle
-cp "$SNAP/sommelier/hooks/mspatcha.dll" "$WINEPREFIX/drive_c/windows/system32/mspatcha.dll"
+cp "$SNAP/sommelier/hooks/mspatcha.dll" "$WINEPREFIX/drive_c/windows/syswow64/mspatcha.dll"
 
 INSTALL_URL_DE="https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/2001320074/AcroRdrDC2001320074_de_DE.exe"
 INSTALL_URL_US="https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/2001320074/AcroRdrDC2001320074_en_US.exe"
@@ -39,9 +39,9 @@ function install() {
     # Apply reg
     wget --no-check-certificate -q https://gist.github.com/mmtrt/896cf131e3956b23e8e47a5a52f58b01/raw/097cbd0eeb836d69a84423aaef9a7ead2840a111/acrordr -P ${TMPDIR} && wine regedit ${TMPDIR}/acrordr && rm ${TMPDIR}/acrordr
     # set prefix os to xp
-    $WINETRICKS --unattended winxp
+    winetricks --unattended winxp
     # Rename some files which are going rouge on closing acrordr
-    cd "$WINEPREFIX/drive_c/Program Files/Common Files/Adobe/ARM/1.0"
+    cd "$WINEPREFIX/drive_c/Program Files (x86)/Common Files/Adobe/ARM/1.0"
     mv armsvc.exe armsvc.exe_disabled
     mv AdobeARM.exe AdobeARM.exe_disabled
     mv AdobeARMHelper.exe AdobeARMHelper.exe_disabled

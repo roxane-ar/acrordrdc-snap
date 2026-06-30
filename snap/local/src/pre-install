@@ -11,11 +11,11 @@ $WINETRICKS --unattended riched20 vcrun2015
 # Get mspatcha.dll from snap bundle
 cp "$SNAP/sommelier/hooks/mspatcha.dll" "$WINEPREFIX/drive_c/windows/system32/mspatcha.dll"
 
-INSTALL_URL_DE="https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/2001320064/AcroRdrDC2001320064_de_DE.exe"
-INSTALL_URL_US="https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/2001320064/AcroRdrDC2001320064_en_US.exe"
-INSTALL_URL_ES="https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/2001320064/AcroRdrDC2001320064_es_ES.exe"
-INSTALL_URL_FR="https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/2001320064/AcroRdrDC2001320064_fr_FR.exe"
-INSTALL_URL_JP="https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/2001320064/AcroRdrDC2001320064_ja_JP.exe"
+INSTALL_URL_DE="https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/2001320074/AcroRdrDC2001320074_de_DE.exe"
+INSTALL_URL_US="https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/2001320074/AcroRdrDC2001320074_en_US.exe"
+INSTALL_URL_ES="https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/2001320074/AcroRdrDC2001320074_es_ES.exe"
+INSTALL_URL_FR="https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/2001320074/AcroRdrDC2001320074_fr_FR.exe"
+INSTALL_URL_JP="https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/2001320074/AcroRdrDC2001320074_ja_JP.exe"
 
 if [[ ! -f "$prefixFont/Segoe UI.ttf" ]]; then
   mkdir -p "$prefixFont"

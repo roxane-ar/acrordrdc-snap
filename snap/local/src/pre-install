@@ -6,8 +6,6 @@ progBin="AcroRd32.exe"
 progSetup="$WINEPREFIX/drive_c/Program Files/Adobe/Acrobat Reader DC/Setup Files/{AC76BA86-7AD7-1033-7B44-AC0F074E4100}"
 prefixFont="$WINEPREFIX/drive_c/windows/Fonts"
 
-$WINETRICKS --unattended riched20 vcrun2015
-
 # Get mspatcha.dll from snap bundle
 cp "$SNAP/sommelier/hooks/mspatcha.dll" "$WINEPREFIX/drive_c/windows/system32/mspatcha.dll"
 
